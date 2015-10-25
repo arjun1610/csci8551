@@ -1,0 +1,71 @@
+\documentclass[11pt]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amscd}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+
+\usepackage{epsfig}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\pagestyle{empty}
+\usepackage{color}
+%\usepackage[all,dvips]{xy}
+
+
+\setlength{\textheight}{8.5in} \setlength{\topmargin}{0.0in}
+\setlength{\headheight}{0.0in} \setlength{\headsep}{0.0in}
+\setlength{\leftmargin}{0.5in}
+\setlength{\oddsidemargin}{0.0in}
+%\setlength{\parindent}{1pc}
+\setlength{\textwidth}{6.5in}
+%\linespread{1.6}
+
+\newtheorem{definition}{Definition}
+\newtheorem{problem}{Problem}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{note}[theorem]{Note}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{prop}[theorem]{Proposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\thispagestyle{empty}
+
+\centerline{\textbf{\Large{Project Part I}}}
+\centerline{CSci 8551: Intelligent Agents}
+\bigskip
+\bigskip
+\centerline{\textbf{\Large{Detecting Edges In Images}}}
+\centerline{\it{\Large{Edge detection in images using Ant Colony Optimization Algorithms}}}
+\bigskip
+\centerline{\Large{Arjun Varshney}}
+\centerline{varsh007@umn.edu}
+
+\section*{Motivation} 
+Edges are the most important feature in an image. Detection of edges in an image is a very important step in the areas of feature detection and feature extraction. Edge detection deals with extracting edges in an image by identifying pixels where the intensity variation is high. An edge is the set of pixels, whose surrounding gray intensity value is rapidly changes. In this project, we use Ant Colony Optimization [ACO] algorithms to detect edges in an image and compare results of various algorithms for a set of images.  
+
+\section*{Related Study}
+ACO is a multi-agent system, population-based metaheuristic that mimics the foraging behavior of ants(agents) to find approximate solutions to difficult optimization problems. ACO techniques have been applied in various domains like in networks - Travelling Salesman Problem and Traffic signal control etc. For this project, we use the ACO algorithms to detect edges in an image, using the intensity values (grayscale intensity), and use that as a parameter for ants.
+
+\section*{Project Plan and Evaluation}
+The plan is to work on the images and apply ACO algorithms to detect edges. ACO is biologically inspired algorithm which is based on imitating behavior of ants. The algorithm is based on the fact how ants deposit pheromone(Pheromone is the paramater which decides the movement of ants(agents)). ACO generates a pheromone matrix which will store the edge information present at each pixel position of image, formed by ants dispatched on image [1]. The movement of ants depends on local variance of image's intensity values. ACO metaheuristics[2] like Ant System and Ant Colony System will be  implemented in this project to detect edges and we will compare the results of these algorithms to see which one works better. Results will comprise of images containing the edges. The better edges are produced, the better the algorithm has performed.  
+	
+
+\begin{thebibliography}{99}
+% NOTE: change the "9" above to "99" if you have MORE THAN 10 references.
+
+\bibitem{MDKS} Marco Dorigo and Krzysztof Socha,{\textit{An Introduction to
+Ant Colony Optimization}}, April 2006
+
+\bibitem{JTWYSX} Jing Tian, Weiyu Yu, and Shengli Xie,{\textit{An Ant Colony Optimization Algorithm For Image Edge Detection}}, 2008 IEEE Congress on Evolutionary Computation (CEC 2008) 
+
+\end{thebibliography}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document} 
