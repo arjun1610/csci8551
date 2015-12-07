@@ -1,23 +1,22 @@
-import numpy as np
-import time
 
 try:
     import matplotlib.pylab as plt
     import matplotlib.image as mpimg
+    import numpy as np
+    import time
+    from skimage.color import rgb2gray
+    import scipy.io as sio
+    from scipy import misc
 except ImportError:
     pass
 
 
 def acoedgedetect():
-    global v
-    plt.close(all)
-    clear(all)
-    clc
     # image loading
     filename = 'eye'
     img = rgb2gray(mpimg.imread(np.array(np.hstack((filename + '.bmp')))))
     img = np.double(img) / 255.
-    [nrow, ncol] = img.shape
+    [nrow, ncol] = np.shape(img)
     # visiblity function initialization, see equation (4)
     for nMethod in range(1., 5.):
         # Four kernel functions used in the paper, see equations (7)-(10)
@@ -36,7 +35,7 @@ def acoedgedetect():
                                             np.hstack((rr + 1., cc + 2.)), np.hstack((rr + 1., cc + 1.)),
                                             np.hstack((rr + 1., cc)), np.hstack((rr + 1., cc - 1.)),
                                             np.hstack((rr + 1., cc - 2.)), np.hstack((rr, cc + 1.)))))
-                temp0 = nonzero(np.logical_and(np.logical_and(np.logical_and(np.logical_and(np.logical_and(
+                temp0 = np.nonzero(np.logical_and(np.logical_and(np.logical_and(np.logical_and(np.logical_and(
                     np.logical_and(np.logical_and(temp1[:, 0] >= 0., temp1[:, 0] < nrow), temp1[:, 1] >= 0.),
                     temp1[:, 1] < ncol), temp2[:, 0] >= 0.), temp2[:, 0] < nrow), temp2[:, 1] >= 0.),
                     temp2[:, 1] < ncol))
@@ -73,7 +72,7 @@ def acoedgedetect():
         # do normalization
         v *= 100.
         # pheromone function initialization
-        p = 0.0001 * np.ones(img.shape)
+        p = 0.0001 * np.ones(np.shape(img))
         # parameter setting, see Section IV in CEC paper
         alpha = 1.
         # equation (4)
@@ -161,7 +160,7 @@ def acoedgedetect():
                                                                     np.hstack((rr + 1., cc + 1.)))))
 
                     # remove the positions our of the image's range
-                    temp = nonzero(np.logical_and(np.logical_and(
+                    temp = np.nonzero(np.logical_and(np.logical_and(
                         np.logical_and(ant_search_range_temp[:, 0] >= 1., ant_search_range_temp[:, 0] <= nrow),
                         ant_search_range_temp[:, 1] >= 1.), ant_search_range_temp[:, 1] <= ncol))
                     ant_search_range = ant_search_range_temp[int(temp) - 1, :]
@@ -171,7 +170,7 @@ def acoedgedetect():
                     ant_transit_prob_p = np.zeros(ant_search_range.size, 1.)
                     for kk in np.arange(1., (ant_search_range.size) + 1):
                         temp = np.dot(ant_search_range[int(kk) - 1, 0] - 1., ncol) + ant_search_range[int(kk) - 1, 1]
-                        if length(nonzero((ant_memory[int(ant_idx) - 1, :] == temp))) == 0.:
+                        if len(np.nonzero((ant_memory[int(ant_idx) - 1, :] == temp))) == 0.:
                             # not in ant's memory
                             ant_transit_prob_v[int(kk) - 1] = v[
                                 int(ant_search_range[int(kk) - 1, 0]) - 1, int(ant_search_range[int(kk) - 1, 1]) - 1]
@@ -196,11 +195,11 @@ def acoedgedetect():
                     ant_transit_prob = ant_transit_prob_v ** alpha * ant_transit_prob_p ** beta / np.sum(
                         np.sum((ant_transit_prob_v ** alpha * ant_transit_prob_p ** beta)))
                     # generate a random number to determine the next position.
-                    random.set_state(np.sum((100. * clock)))
-                    temp = nonzero((np.cumsum(ant_transit_prob) >= np.random.rand(1.)), 1.)
+                    np.random.set_state(np.sum((100. * clock)))
+                    temp = np.nonzero((np.cumsum(ant_transit_prob) >= np.random.rand(1.)), 1.)
                     ant_next_row_idx = ant_search_range[int(temp) - 1, 0]
                     ant_next_col_idx = ant_search_range[int(temp) - 1, 1]
-                    if length(ant_next_row_idx) == 0.:
+                    if len(ant_next_row_idx) == 0.:
                         ant_next_row_idx = ant_current_row_idx
                         ant_next_col_idx = ant_current_col_idx
 
@@ -270,23 +269,23 @@ def func_seperate_two_class(I):
     [counts, N] = plt.hist(I, 256.)
     i = 1.
     mu = np.cumsum(counts)
-    T[int(i) - 1] = matdiv(np.sum((N * counts)), mu[int(0) - 1])
+        T[int(i) - 1] = np.divide(np.sum((N * counts)), mu[int(0) - 1])
     # STEP 2: compute Mean above T (MAT) and Mean below T (MBT) using T from
     # step 1
     mu2 = np.cumsum(counts[int((N <= T[int(i) - 1])) - 1])
-    MBT = matdiv(np.sum((N[int((N <= T[int(i) - 1])) - 1] * counts[int((N <= T[int(i) - 1])) - 1])), mu2[int(0) - 1])
+    MBT = np.divide(np.sum((N[int((N <= T[int(i) - 1])) - 1] * counts[int((N <= T[int(i) - 1])) - 1])), mu2[int(0) - 1])
     mu3 = np.cumsum(counts[int((N > T[int(i) - 1])) - 1])
-    MAT = matdiv(np.sum((N[int((N > T[int(i) - 1])) - 1] * counts[int((N > T[int(i) - 1])) - 1])), mu3[int(0) - 1])
+    MAT = np.divide(np.sum((N[int((N > T[int(i) - 1])) - 1] * counts[int((N > T[int(i) - 1])) - 1])), mu3[int(0) - 1])
     i = i + 1.
     T[int(i) - 1] = (MAT + MBT) / 2.
     # STEP 3 to n: repeat step 2 if T(i)~=T(i-1)
     Threshold = T[int(i) - 1]
     while np.abs((T[int(i) - 1] - T[int((i - 1.)) - 1])) >= 1.:
         mu2 = np.cumsum(counts[int((N <= T[int(i) - 1])) - 1])
-        MBT = matdiv(np.sum((N[int((N <= T[int(i) - 1])) - 1] * counts[int((N <= T[int(i) - 1])) - 1])),
+        MBT = np.divide(np.sum((N[int((N <= T[int(i) - 1])) - 1] * counts[int((N <= T[int(i) - 1])) - 1])),
                      mu2[int(0) - 1])
         mu3 = np.cumsum(counts[int((N > T[int(i) - 1])) - 1])
-        MAT = matdiv(np.sum((N[int((N > T[int(i) - 1])) - 1] * counts[int((N > T[int(i) - 1])) - 1])), mu3[int(0) - 1])
+        MAT = np.divide(np.sum((N[int((N > T[int(i) - 1])) - 1] * counts[int((N > T[int(i) - 1])) - 1])), mu3[int(0) - 1])
         i = i + 1.
         T[int(i) - 1] = (MAT + MBT) / 2.
         Threshold = T[int(i) - 1]
@@ -294,3 +293,5 @@ def func_seperate_two_class(I):
     # Normalize the threshold to the range [i, 1].
     level = Threshold
     return [level]
+
+

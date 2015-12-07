@@ -18,7 +18,7 @@ close all;
 clear; 
 clc;
 % image loading
-filename = 'tyrion';
+filename = 'eye';
 img=rgb2gray(imread([filename '.bmp']));
 img = double(img)./255;
 [nrow, ncol] = size(img);
@@ -89,7 +89,7 @@ for nMethod = 3:3;
     phi = 0.05;     %equation (12), i.e., (9) in IEEE-CIM-06
 
 
-    ant_total_num = round(sqrt(nrow*ncol));
+    ant_total_num = 2*round(sqrt(nrow*ncol));
 
     ant_pos_idx = zeros(ant_total_num, 2); % record the location of ant
 
@@ -104,7 +104,7 @@ for nMethod = 3:3;
     %function
 %     [~,index]=max(v);
     meanValue=mean(v,1);
-    [~,index]=min(abs(v-repmat(meanValue,nrow,1)));
+    [~,index]=min(abs(v-repmat(meanValue,ne));
     ant_pos_idx(1:ncol,1)= 1:ncol;
     temp=0:ncol-1;
     temp1=ones(1,ncol)*ncol;
@@ -243,7 +243,7 @@ for nMethod = 3:3;
     % create the image at every iteration to see the difference
     
     T = func_seperate_two_class(p); %eq. (13)-(21), Calculate the threshold to seperate the edge map into two class
-    imwrite(uint8(abs((p>=T).*255-255)), gray(256), [filename '_edge_aco_' num2str(nMethod) '_' num2str(iteration_idx) '.bmp'], 'bmp');        
+    imwrite(uint8(abs((p>=T).*255)-255), gray(256), [filename '_edge_aco_' num2str(nMethod) '_' num2str(iteration_idx) '.bmp'], 'bmp');        
     
     timespent=toc;
     fprintf('timespent for %d iteration: %2f\n', iteration_idx, timespent);
