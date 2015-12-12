@@ -1,19 +1,21 @@
-function edgedetectACO
+function edgedetectAS
 %
 % lekhak: varsh007@umn.edu
 %
+% Input:
+% gray image with a square size
 %
-global eta alpha beta rho phi N L init ants_K
-global Threshold pheromone img rows cols
- 
+global eta pheromone alpha beta rho phi iterations L
+global ants_K ant_movement T img
+
+%parameter setting, 
 alpha = 1;      
 beta = 0.1; 
 rho = 0.1;  
 phi = 0.01; 
-N = 10;
+iterations = 10;
 L = 400;
-init = 0.0001;
-
+% image loading
 filename = 'lenac';
 %for reading the RGB images 
 img=rgb2gray(imread([filename '.png']));
@@ -28,9 +30,8 @@ ants_K = cols;
 ant_movement = zeros(ants_K, L);
 ants_position_coordinates = zeros(ants_K, 2); 
 % pheromone matrix initialization
-pheromone = init.* ones(size(img));
-% initializing it here due to the fact of second update rule
-pheromone_init=pheromone;
+pheromone = 0.0001 .* ones(size(img));
+%visiblity function initialization
 eta = visibility();
 %initialize the position of ants at maximum value of visibility
 %function
@@ -47,8 +48,10 @@ ants_position_coordinates(1:cols,2)= 1:cols;
 %     ants_position_coordinates(cols+1:end,1)=vis1-in_range_values;
 ants_position_coordinates(1:rows,1)=index;
 %     ants_position_coordinates(rows+1:end,2)=index;
-for iterator = 1: N
+
+for iterator = 1: iterations
     tic;
+    delta_p = zeros(rows, cols);  
     for step_iterator = 1: L
         last_deposited_pheromone = zeros(rows, cols);
         for ant_iterator = 1:ants_K
@@ -76,8 +79,8 @@ for iterator = 1: N
                     ant_pheromone_trp(xy) = pheromone(ant_vis(xy,1), ant_vis(xy,2));
                 end
             end
-	    total_sum=(sum(sum((ant_visibility_trp.^alpha) .* (ant_pheromone_trp.^beta))));
-            trp = (ant_visibility_trp.^alpha) .* (ant_pheromone_trp.^beta) ./ total_sum;
+            trp = (ant_visibility_trp.^alpha) .* (ant_pheromone_trp.^beta) ./ (sum(sum((ant_visibility_trp.^alpha) .* (ant_pheromone_trp.^beta))));
+            
             value = find(cumsum(trp)>=rand(1),1);
             ant_next_row_idx = ant_vis(value,1);
             ant_next_col_idx = ant_vis(value,2);
@@ -87,23 +90,17 @@ for iterator = 1: N
             end
             ants_position_coordinates(ant_iterator,1) = ant_next_row_idx;
             ants_position_coordinates(ant_iterator,2) = ant_next_col_idx;
-            %the last step coordinate taken by the ant
+            %record the last_deposited_pheromone
             last_deposited_pheromone(ants_position_coordinates(ant_iterator,1), ants_position_coordinates(ant_iterator,2)) = eta(ants_position_coordinates(ant_iterator,1), ants_position_coordinates(ant_iterator,2));
-            % record the new position into ant's movement coordinates
-            % store the flattened coordinate
             ant_movement(ant_iterator,step_iterator) = (ants_position_coordinates(ant_iterator,1)-1)*cols + ants_position_coordinates(ant_iterator,2);
-        % local update     
-        % first part if i,j belongs to current ant 
-        % second part otherwise 
-        pheromone = ((1-rho).*pheromone + rho.*eta.*last_deposited_pheromone).*last_deposited_pheromone + pheromone.*(abs(1-last_deposited_pheromone));
         end % end of ant_iterator
-        % global update
-        pheromone = ((1-phi).*pheromone + phi.*pheromone_init);
+        pheromone = ((1-phi).*pheromone + last_deposited_pheromone);
     end % end of step_iterator
     % create the image at every iteration to see the difference
-    fprintf('pheromone sum of iteration  %d: %2f\n', iterator, sum(sum(pheromone)));    
-    Threshold = classifier(pheromone); 
-    imwrite(uint8(abs((pheromone>=Threshold).*255-255)), gray(256), [filename '_edge_aco_' num2str(iterator) '.bmp'], 'bmp');
+    fprintf('pheromone sum of iteration  %d: %2f\n', iterator, sum(sum(pheromone)));
+    fprintf('deltaP sum of iteration %d: %2f\n', iterator, sum(sum(delta_p)));
+    T = classifier(pheromone); 
+    imwrite(uint8(abs((pheromone>=T).*255-255)), gray(256), [filename '_edge_AS_' num2str(iterator) '.bmp'], 'bmp');
     timespent=toc;
     fprintf('timespent for %d iteration: %2f\n', iterator, timespent);
 end % end of iterator
